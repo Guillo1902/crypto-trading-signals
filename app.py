@@ -4,18 +4,17 @@ from firebase_admin import credentials, db
 import datetime
 import pandas as pd
 
+# Leer credenciales desde secrets y convertirlas a dict
+cred_dict = dict(st.secrets["FIREBASE"])
+cred = credentials.Certificate(cred_dict)
 
-import json
-
-cred_dict = st.secrets["FIREBASE"]
-cred = credentials.Certificate(json.loads(json.dumps(cred_dict)))
-
+# Inicializar Firebase solo una vez
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred, {
         'databaseURL': "https://grupo10-b7d3b-default-rtdb.firebaseio.com/"
     })
 
-
+# Función para analizar historial
 def analizar_historial(moneda_id):
     now = datetime.datetime.now()
     hace_una_hora = now - datetime.timedelta(hours=1)
@@ -54,16 +53,19 @@ def analizar_historial(moneda_id):
         "Signal": signal
     }
 
+# Lista de criptomonedas
 cryptos = [
     'bitcoin', 'ethereum', 'binancecoin', 'usd-coin', 'ripple',
     'binance-peg-dogecoin', 'wrapped-solana', 'bridged-tether-fuse',
     'the-open-network', 'ada-the-dog'
 ]
 
+# Interfaz Streamlit
 st.set_page_config(page_title="Crypto Trading Signals", layout="wide")
 st.title("📊 Plataforma de Señales de Trading con Criptomonedas")
 st.write("Actualización en tiempo real basada en datos desde Firebase.")
 
+# Procesamiento y visualización
 resultados = []
 for moneda in cryptos:
     r = analizar_historial(moneda)
