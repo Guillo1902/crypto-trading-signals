@@ -4,14 +4,17 @@ from firebase_admin import credentials, db
 import datetime
 import pandas as pd
 
-FIREBASE_CREDENTIALS = "firebase_config.json"
-FIREBASE_DB_URL = "https://grupo10-b7d3b-default-rtdb.firebaseio.com/"
+
+import json
+
+cred_dict = st.secrets["FIREBASE"]
+cred = credentials.Certificate(json.loads(json.dumps(cred_dict)))
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate(FIREBASE_CREDENTIALS)
     firebase_admin.initialize_app(cred, {
-        'databaseURL': FIREBASE_DB_URL
+        'databaseURL': "https://grupo10-b7d3b-default-rtdb.firebaseio.com/"
     })
+
 
 def analizar_historial(moneda_id):
     now = datetime.datetime.now()
